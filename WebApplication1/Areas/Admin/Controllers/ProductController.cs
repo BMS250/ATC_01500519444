@@ -1,6 +1,9 @@
 ﻿using BookWeb.DataAccess.Repository.IRepository;
 using BookWeb.Models;
+using BookWeb.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
 
 namespace MyBookWeb.Areas.Admin.Controllers
 {
@@ -15,52 +18,54 @@ namespace MyBookWeb.Areas.Admin.Controllers
         public IActionResult Index()
         {
             List<Product> products = _unitOfWork.Product.GetAll().ToList();
-            return View(products);
+            // My Idea
+            List<Category> catergories = _unitOfWork.Category.GetAll().ToList();
+            Tuple<List<Product>, List<Category>> tuple = new(products, catergories);
+            return View(tuple);
         }
-        public IActionResult Create()
+        public IActionResult Upsert(int? id)
         {
-            return View();
+            IEnumerable<SelectListItem> CategoryList = _unitOfWork.Category.GetAll().ToList().Select(u => new SelectListItem
+            {
+                Text = u.Name,
+                Value = u.CategoryId.ToString()
+            });
+            //ViewBag.CategoryList = CategoryList;
+            //ViewData["CategoryList"] = CategoryList;
+            ProductVM productVM;
+            if (id != 0 && id != null)
+            {
+                productVM = new ProductVM
+                {
+                    Product = _unitOfWork.Product.Get(u => u.ProductId == id),
+                    
+                    CategoryList = CategoryList
+                };
+            }
+            else
+            {
+                productVM = new ProductVM
+                {
+                    Product = new(),
+                    CategoryList = CategoryList
+                };
+            }
+            return View(productVM);
         }
         [HttpPost]
-        public IActionResult Create(Product product)
+        public IActionResult Upsert(ProductVM productVM, IFormFile? file)
         {
             if (ModelState.IsValid)
             {
-                _unitOfWork.Product.Add(product);
+                _unitOfWork.Product.Add(productVM.Product);
                 _unitOfWork.Save();
-                TempData["success"] = $"{product.Title} has been created successfully";
+                TempData["success"] = $"{productVM.Product.Title} has been upserted successfully";
                 return RedirectToAction("Index");
             }
             TempData["error"] = $"Failed to add this Product";
             return View();
         }
-        public IActionResult Edit(int? id)
-        {
-            if (id == 0 || id == null)
-            {
-                TempData["error"] = $"The Product ID can't be {id}";
-                return View();
-            }
-            Product? product = _unitOfWork.Product.Get(u => u.ProductId == id);
-            if (product == null)
-            {
-                TempData["error"] = $"The Product is not found";
-                return NotFound();
-            }
-            return View(product);
-        }
-        [HttpPost]
-        public IActionResult Edit(Product product)
-        {
-            if (ModelState.IsValid)
-            {
-                _unitOfWork.Product.Update(product);
-                _unitOfWork.Save();
-                TempData["success"] = $"{product.Title} has been edited successfully";
-                return RedirectToAction("Index");
-            }
-            return View();
-        }
+        
         public IActionResult Delete(int? id)
         {
             if (id == 0 || id == null)

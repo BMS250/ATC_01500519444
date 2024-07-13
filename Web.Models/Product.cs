@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace BookWeb.Models
 {
@@ -37,12 +38,13 @@ namespace BookWeb.Models
         [Required]
         public double Price100 { get; set; }
 
-
+        [Display(Name = "Category ID")]
         public int CId { get; set; }
         //[Required]
         [ForeignKey("CId")]
+        [ValidateNever]
         public Category Category { get; set; }
-
+        [ValidateNever]
         public string ImageURL { get; set; }
     }
 }

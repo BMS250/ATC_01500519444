@@ -1,6 +1,7 @@
 ﻿using BookWeb.DataAccess.Repository.IRepository;
 using BookWeb.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace MyBookWeb.Areas.Admin.Controllers
 {
@@ -35,24 +36,35 @@ namespace MyBookWeb.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Create(Category obj)
         {
-            if (obj.Name == "kkk")
-            {
-                ModelState.AddModelError("name", "You should write a valid name");
-            }
-            //if (obj.DisplayOrder <= 0)
+            //if (obj.Name == "kkk")
             //{
-            //    ModelState.AddModelError("displayorder", "You should write a valid order");
+            //    ModelState.AddModelError("name", "You should write a valid name");
             //}
-            if (ModelState.IsValid)
+            //if (obj.Name == "aaa")
+            //{
+            //    ModelState.AddModelError("Name", "you should write a valid order");
+            //}
+            //if (ModelState.IsValid)
+            //{
+            bool existed = false;
+            foreach (var c in _unitOfWork.Category.GetAll())
+            {
+                if (c.Name == obj.Name)
+                {
+                    existed = true;
+                    TempData["error"] = $"This category is already existed";
+                    return View();
+                }
+            }
+            if (!existed)
             {
                 _unitOfWork.Category.Add(obj);
                 _unitOfWork.Save();
-                //_db.Categories.Add(obj);
-                //_db.SaveChanges();
                 TempData["success"] = $"{obj.Name} has been created successfully";
                 return RedirectToAction("Index");
             }
-            TempData["error"] = $"Failed to create this category";
+                
+            //}
             return View();
         }
         public IActionResult Edit(int? id)
