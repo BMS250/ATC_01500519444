@@ -1,0 +1,39 @@
+﻿@* @using BookWeb.Models *@
+@model Category
+@if (TempData["error"] != null)
+{
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <script type="text/javascript">
+        toastr.error('@TempData["error"]');
+    </script>
+}
+<div class="card-body p-4">
+    <form method="post" class="row">
+        <div class="border p-3">
+            <div class="form-floating  py-2 col-12">
+                <input asp-for="Name" class="form-control border-0 shadow" />
+                <label asp-for="Name" class="ms-2"></label>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-floating py-2 col-12">
+                <input asp-for="DisplayOrder" class="form-control border-0 shadow" />
+                <label asp-for="DisplayOrder" class="ms-2"></label>
+                <span asp-validation-for="DisplayOrder" class="text-danger"></span>
+            </div>
+            <div class="row pt-2">
+                <div class="col-6 col-md-3">
+                    <button type="submit" class="btn btn-primary form-control">Create</button>
+                </div>
+                <div class="col-6 col-md-3">
+                    <a asp-controller="Category" asp-action="Index" class="btn btn-secondary border form-control">Back to List</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+@section Scripts{
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}
