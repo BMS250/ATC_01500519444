@@ -11,9 +11,11 @@ namespace MyBookWeb.Areas.Admin.Controllers
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-        public ProductController(IUnitOfWork unitOfWork)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public ProductController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
             _unitOfWork = unitOfWork;
+            _webHostEnvironment = webHostEnvironment;
         }
         public IActionResult Index()
         {
@@ -25,39 +27,82 @@ namespace MyBookWeb.Areas.Admin.Controllers
         }
         public IActionResult Upsert(int? id)
         {
-            IEnumerable<SelectListItem> CategoryList = _unitOfWork.Category.GetAll().ToList().Select(u => new SelectListItem
+            //IEnumerable<SelectListItem> CategoryList = _unitOfWork.Category.GetAll().ToList().Select(u => new SelectListItem
+            //{
+            //    Text = u.Name,
+            //    Value = u.CategoryId.ToString()
+            //});
+            ////ViewBag.CategoryList = CategoryList;
+            ////ViewData["CategoryList"] = CategoryList;
+            //if (id != 0 && id != null)
+            //{
+            //    ProductVM productVM = new ProductVM
+            //    {
+            //        Product = _unitOfWork.Product.Get(u => u.ProductId == id),
+
+            //        CategoryList = CategoryList
+            //    };
+            //    return View(productVM);
+            //}
+            //else
+            //{
+            //    ProductVM productVM = new ProductVM
+            //    {
+            //        Product = new(),
+            //        CategoryList = CategoryList
+            //    };
+            //    return View(productVM);
+            //}
+            ProductVM productVM = new()
             {
-                Text = u.Name,
-                Value = u.CategoryId.ToString()
-            });
-            //ViewBag.CategoryList = CategoryList;
-            //ViewData["CategoryList"] = CategoryList;
-            ProductVM productVM;
-            if (id != 0 && id != null)
-            {
-                productVM = new ProductVM
+                CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem
                 {
-                    Product = _unitOfWork.Product.Get(u => u.ProductId == id),
-                    
-                    CategoryList = CategoryList
-                };
+                    Text = u.Name,
+                    Value = u.CategoryId.ToString()
+                }),
+                Product = new Product()
+            };
+            if (id == null || id == 0)
+            {
+                //create
+                return View(productVM);
             }
             else
             {
-                productVM = new ProductVM
-                {
-                    Product = new(),
-                    CategoryList = CategoryList
-                };
+                //update
+                productVM.Product = _unitOfWork.Product.Get(u => u.ProductId == id);
+                return View(productVM);
             }
-            return View(productVM);
+
         }
         [HttpPost]
         public IActionResult Upsert(ProductVM productVM, IFormFile? file)
         {
             if (ModelState.IsValid)
             {
+                string wwwRootPath = _webHostEnvironment.WebRootPath;
+                if (file != null)
+                {
+                    string fileName = Guid.NewGuid().ToString();
+                    string productPath = Path.Combine(wwwRootPath, @"images\product");
+
+                    using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
+                    {
+                        file.CopyTo(fileStream);
+                    }
+
+                    productVM.Product.ImageURL = @"images\product\" + fileName;
+                }
+
                 _unitOfWork.Product.Add(productVM.Product);
+                //if (productVM.Product.ProductId == 0)
+                //{
+                //    _unitOfWork.Product.Add(productVM.Product);
+                //}
+                //else
+                //{
+                //    _unitOfWork.Product.Update(productVM.Product);
+                //}
                 _unitOfWork.Save();
                 TempData["success"] = $"{productVM.Product.Title} has been upserted successfully";
                 return RedirectToAction("Index");

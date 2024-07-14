@@ -38,9 +38,8 @@ namespace BookWeb.Models
         [Required]
         public double Price100 { get; set; }
 
-        [Display(Name = "Category ID")]
+        //[Display(Name = "Category ID")]
         public int CId { get; set; }
-        //[Required]
         [ForeignKey("CId")]
         [ValidateNever]
         public Category Category { get; set; }
