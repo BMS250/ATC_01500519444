@@ -18,6 +18,8 @@ namespace BookWeb.DataAccess.Repository
         {
             _db = db;
             dbSet = _db.Set<T>();
+            // I can see the category so no need to use it
+            //_db.Products.Include(u => u.Category).Include(u => u.CId);
         }
         public void Add(T entity)
         {
@@ -31,9 +33,17 @@ namespace BookWeb.DataAccess.Repository
             return query.FirstOrDefault();
         }
 
-        public IEnumerable<T> GetAll()
+        public IEnumerable<T> GetAll(string? includeProperties = null)
         {
             IQueryable<T> query = dbSet;
+            // I can see the category so no need to use it
+            //if (!string.IsNullOrEmpty(includeProperties))
+            //{
+            //    foreach (var includeProp in includeProperties.Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries))
+            //    {
+            //        query = query.Include(includeProp);
+            //    }
+            //}
             return query.ToList();
         }
 

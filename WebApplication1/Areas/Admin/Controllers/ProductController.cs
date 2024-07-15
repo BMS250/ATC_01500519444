@@ -19,7 +19,7 @@ namespace MyBookWeb.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
-            List<Product> products = _unitOfWork.Product.GetAll().ToList();
+            List<Product> products = _unitOfWork.Product.GetAll(/*includeProperties: "Category"*/).ToList();
             // My Idea
             List<Category> catergories = _unitOfWork.Category.GetAll().ToList();
             Tuple<List<Product>, List<Category>> tuple = new(products, catergories);
@@ -27,32 +27,6 @@ namespace MyBookWeb.Areas.Admin.Controllers
         }
         public IActionResult Upsert(int? id)
         {
-            //IEnumerable<SelectListItem> CategoryList = _unitOfWork.Category.GetAll().ToList().Select(u => new SelectListItem
-            //{
-            //    Text = u.Name,
-            //    Value = u.CategoryId.ToString()
-            //});
-            ////ViewBag.CategoryList = CategoryList;
-            ////ViewData["CategoryList"] = CategoryList;
-            //if (id != 0 && id != null)
-            //{
-            //    ProductVM productVM = new ProductVM
-            //    {
-            //        Product = _unitOfWork.Product.Get(u => u.ProductId == id),
-
-            //        CategoryList = CategoryList
-            //    };
-            //    return View(productVM);
-            //}
-            //else
-            //{
-            //    ProductVM productVM = new ProductVM
-            //    {
-            //        Product = new(),
-            //        CategoryList = CategoryList
-            //    };
-            //    return View(productVM);
-            //}
             ProductVM productVM = new()
             {
                 CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem
