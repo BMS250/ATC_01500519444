@@ -83,28 +83,40 @@ namespace MyBookWeb.Areas.Admin.Controllers
                 string wwwRootPath = _webHostEnvironment.WebRootPath;
                 if (file != null)
                 {
-                    string fileName = Guid.NewGuid().ToString();
+                    string fileName = Guid.NewGuid().ToString() + ".png";
                     string productPath = Path.Combine(wwwRootPath, @"images\product");
+
+                    if (!string.IsNullOrEmpty(productVM.Product.ImageURL))
+                    {
+                        var oldImagePath = Path.Combine(wwwRootPath, productVM.Product.ImageURL.TrimStart('\\'));
+
+                        if (System.IO.File.Exists(oldImagePath))
+                        {
+                            System.IO.File.Delete(oldImagePath);
+                        }
+                    }
 
                     using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
                     {
                         file.CopyTo(fileStream);
                     }
 
-                    productVM.Product.ImageURL = @"images\product\" + fileName;
+                    productVM.Product.ImageURL = @"\images\product\" + fileName;
                 }
-
-                _unitOfWork.Product.Add(productVM.Product);
-                //if (productVM.Product.ProductId == 0)
-                //{
-                //    _unitOfWork.Product.Add(productVM.Product);
-                //}
-                //else
-                //{
-                //    _unitOfWork.Product.Update(productVM.Product);
-                //}
-                _unitOfWork.Save();
-                TempData["success"] = $"{productVM.Product.Title} has been upserted successfully";
+                Console.WriteLine(productVM.Product.ImageURL);
+                if (productVM.Product.ProductId == 0)
+                {
+                    _unitOfWork.Product.Add(productVM.Product);
+                    _unitOfWork.Save();
+                    TempData["success"] = $"{productVM.Product.Title} has been created successfully";
+                }
+                else
+                {
+                    _unitOfWork.Product.Update(productVM.Product);
+                    _unitOfWork.Save();
+                    TempData["success"] = $"{productVM.Product.Title} has been updated successfully";
+                }
+                
                 return RedirectToAction("Index");
             }
             TempData["error"] = $"Failed to add this Product";
@@ -124,19 +136,24 @@ namespace MyBookWeb.Areas.Admin.Controllers
                 TempData["error"] = $"The Product is not found";
                 return NotFound();
             }
-            return View(product);
+            ProductVM productVM = new()
+            {
+                CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem
+                {
+                    Text = u.Name,
+                    Value = u.CategoryId.ToString()
+                }),
+                Product = product
+            };
+            return View(productVM);
         }
         [HttpPost]
-        public IActionResult Delete(Product product)
+        public IActionResult Delete(ProductVM productVM)
         {
-            //if (ModelState.IsValid)
-            //{
-                _unitOfWork.Product.Remove(product);
-                _unitOfWork.Save();
-            TempData["success"] = $"{product.Title} has been deleted successfully";
+            _unitOfWork.Product.Remove(productVM.Product);
+            _unitOfWork.Save();
+            TempData["success"] = $"{productVM.Product.Title} has been deleted successfully";
             return RedirectToAction("Index");
-            //}
-            //return View();
         }
     }
 }
