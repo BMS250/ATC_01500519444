@@ -1,58 +1,40 @@
-﻿@* @using BookWeb.Models *@
-@* @model List<Product> *@
-@model Tuple<List<Product>, List<Category>>
-<div class="row pt-4 pb-23">
-    <div class="col-6">
-        <h2 class="text-primary">
-            Product List
-        </h2>
+﻿@model List<Product>
+
+<div class="card shadow border-0 my-4">
+    <div class="card-header bg-secondary bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">Product List</h2>
+            </div>
+        </div>
     </div>
-    <div class="col-6 text-end">
-        <a asp-controller="Product" asp-action="Upsert" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> Add New Product
-        </a>
+    <div class="card-body p-4">
+        <div class="row pb-3">
+            <div class="col-6">
+            </div>
+            <div class="col-6 text-end">
+                <a asp-controller="Product" asp-action="Upsert" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i>  Create New Product
+                </a>
+            </div>
+        </div>
+
+        <table id="tblData" class="table table-bordered table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>ISBN</th>
+                    <th>Price</th>
+                    <th>Author</th>
+                    <th>Category</th>
+                    <th></th>
+                </tr>
+            </thead>
+        </table>
+
     </div>
 </div>
-<table id="tblData" class= "table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>
-                Title
-            </th>
-            <th>
-                ISBN
-            </th>
-            <th>
-                Author
-            </th>
-            <th>
-                PriceList
-            </th>
-            <td>
-                Category
-            </td>
-        </tr>
-    </thead>
-</table>
-@section Scripts{
+
+@section Scripts {
     <script src="~/js/product.js"></script>
 }
-@* <table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>
-                All Catergory IDs
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var c in Model.Item2)
-        {
-            <tr>
-                <td>
-                    @c.CategoryId
-                </td>
-            </tr>
-        }
-    </tbody>
-</table> *@

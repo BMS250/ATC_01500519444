@@ -21,9 +21,10 @@ namespace MyBookWeb.Areas.Admin.Controllers
         {
             List<Product> products = _unitOfWork.Product.GetAll(includeProperties: "Category").ToList();
             // My Idea
-            List<Category> catergories = _unitOfWork.Category.GetAll().ToList();
-            Tuple<List<Product>, List<Category>> tuple = new(products, catergories);
-            return View(tuple);
+            //List<Category> catergories = _unitOfWork.Category.GetAll().ToList();
+            //Tuple<List<Product>, List<Category>> tuple = new(products, catergories);
+            //return View(tuple);
+            return View(products);
         }
         public IActionResult Upsert(int? id)
         {
