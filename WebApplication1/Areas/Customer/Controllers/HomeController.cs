@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using BookWeb.Models;
+using BookWeb.DataAccess.Repository.IRepository;
 
 namespace MyBookWeb.Areas.Customer.Controllers
 {
@@ -8,15 +9,24 @@ namespace MyBookWeb.Areas.Customer.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        private readonly IUnitOfWork _unitOfWork;
+        public HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWork)
         {
             _logger = logger;
+            _unitOfWork = unitOfWork;
         }
 
         public IActionResult Index()
         {
-            return View();
+            IEnumerable<Product> products = _unitOfWork.Product.GetAll(includeProperties: "Category");
+
+            return View(products);
+        }
+        public IActionResult Details(int id)
+        {
+            Product product = _unitOfWork.Product.Get(u => u.ProductId == id, includeProperties: "Category");
+
+            return View(product);
         }
 
         public IActionResult Privacy()
