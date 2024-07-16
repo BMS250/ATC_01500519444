@@ -110,7 +110,7 @@ namespace MyBookWeb.Areas.Admin.Controllers
         [HttpDelete]
         public IActionResult Delete(int? id)
         {
-            var productToBeDeleted = _unitOfWork.Product.Get(u => u.ProductId == id, includeProperties: "Category");
+            var productToBeDeleted = _unitOfWork.Product.Get(u => u.ProductId == id);
             if (productToBeDeleted == null)
             {
                 return Json(new {success = false, message = "Error while deleting"});
