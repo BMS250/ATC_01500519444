@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using BookWeb.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace BookWeb.DataAccess.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
@@ -15,6 +17,8 @@ namespace BookWeb.DataAccess.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Category>().HasData(
                 new Category { CategoryId = 1, Name = "a", DisplayOrder = 10 },
                 new Category { CategoryId = 2, Name = "b", DisplayOrder = 20 },
