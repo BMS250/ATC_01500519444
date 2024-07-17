@@ -15,7 +15,7 @@ namespace BookWeb.DataAccess.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
-
+        public DbSet<Company> Companies { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -95,6 +95,58 @@ namespace BookWeb.DataAccess.Data
                     Price100 = 145,
                     CId = 3,
                     ImageURL = ""
+                }
+            );
+            modelBuilder.Entity<Company>().HasData(
+                new Company
+                {
+                    Id = 1,
+                    Name = "Com1",
+                    City = "Cairo",
+                    State = "Ezbet Elnakhl",
+                    StreetAddress = "Elmadrasa",
+                    PostalCode = "000000",
+                    PhoneNumber = "01500519444"
+                },
+                new Company
+                {
+                    Id = 2,
+                    Name = "Com2",
+                    City = "Alexandria",
+                    State = "Moharam Bek",
+                    StreetAddress = "Street 2",
+                    PostalCode = "000001",
+                    PhoneNumber = "01234567890"
+                },
+                new Company
+                {
+                    Id = 3,
+                    Name = "Com3",
+                    City = "Giza",
+                    State = "Dokki",
+                    StreetAddress = "Street 3",
+                    PostalCode = "000002",
+                    PhoneNumber = "01122334455"
+                },
+                new Company
+                {
+                    Id = 4,
+                    Name = "Com4",
+                    City = "Luxor",
+                    State = "West Bank",
+                    StreetAddress = "Street 4",
+                    PostalCode = "000003",
+                    PhoneNumber = "01099887766"
+                },
+                new Company
+                {
+                    Id = 5,
+                    Name = "Com5",
+                    City = "Aswan",
+                    State = "City Center",
+                    StreetAddress = "Street 5",
+                    PostalCode = "000004",
+                    PhoneNumber = "01987654321"
                 }
             );
         }

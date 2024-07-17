@@ -10,7 +10,7 @@ using System.Collections.Generic;
 namespace MyBookWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = SD.Role_Admin)]
+    //[Authorize(Roles = SD.Role_Admin)]
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -81,7 +81,6 @@ namespace MyBookWeb.Areas.Admin.Controllers
 
                     productVM.Product.ImageURL = @"\images\product\" + fileName;
                 }
-                Console.WriteLine(productVM.Product.ImageURL);
                 if (productVM.Product.ProductId == 0)
                 {
                     _unitOfWork.Product.Add(productVM.Product);
@@ -127,7 +126,6 @@ namespace MyBookWeb.Areas.Admin.Controllers
             }
             _unitOfWork.Product.Remove(productToBeDeleted);
             _unitOfWork.Save();
-            List<Product> products = _unitOfWork.Product.GetAll(includeProperties: "Category").ToList();
             return Json(new { success = true, message = "Delete successful" });
         } 
         #endregion
