@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using BookWeb.Models;
 using BookWeb.DataAccess.Repository.IRepository;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using BookWeb.Utility;
 
 namespace MyBookWeb.Areas.Customer.Controllers
 {
@@ -24,9 +27,47 @@ namespace MyBookWeb.Areas.Customer.Controllers
         }
         public IActionResult Details(int id)
         {
-            Product product = _unitOfWork.Product.Get(u => u.ProductId == id, includeProperties: "Category");
+            ShoppingCart shoppingCart = new()
+            {
+                Product = _unitOfWork.Product.Get(u => u.ProductId == id, includeProperties: "Category"),
+                Count = 1,
+                ProductId = id
+            };
+            return View(shoppingCart);
+        }
+        [HttpPost]
+        [Authorize]
+        public IActionResult Details(ShoppingCart shoppingCart)
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            shoppingCart.ApplicationUserId = userId;
+            ShoppingCart cartFromDb = _unitOfWork.ShoppingCart.Get(u => u.ApplicationUserId == userId &&
+            u.ProductId == shoppingCart.ProductId);
 
-            return View(product);
+            if (cartFromDb != null)
+            {
+                //shopping cart exists
+                cartFromDb.Count += shoppingCart.Count;
+                _unitOfWork.ShoppingCart.Update(cartFromDb);
+            }
+            else
+            {
+                //add cart record
+                // Create this new object or make Id = 0 => I don't know why it becomes = 1!!!
+                //_unitOfWork.ShoppingCart.Add(new ShoppingCart()
+                //{
+                //    ApplicationUserId = userId,
+                //    ProductId = shoppingCart.ProductId,
+                //    Count = shoppingCart.Count,
+
+                //});
+                shoppingCart.Id = 0; // Ensure ID is set to default value
+                _unitOfWork.ShoppingCart.Add(shoppingCart);
+            }
+            _unitOfWork.Save();
+            TempData["success"] = "Cart updated successfully";
+            return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Privacy()

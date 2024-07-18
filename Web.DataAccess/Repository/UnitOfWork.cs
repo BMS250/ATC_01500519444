@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BookWeb.DataAccess.Data;
 using BookWeb.DataAccess.Repository.IRepository;
+using BookWeb.Models;
 
 namespace BookWeb.DataAccess.Repository
 {
@@ -13,13 +14,17 @@ namespace BookWeb.DataAccess.Repository
         public ICategoryRepository Category { get; private set; }
         public IProductRepository Product { get; private set; }
         public ICompanyRepository Company { get; private set; }
-        private readonly ApplicationDbContext _db;
+        public IApplicationUserRepository ApplicationUser { get; private set; }
+        public IShoppingCartRepository ShoppingCart { get; private set; }
+        private ApplicationDbContext _db;
         public UnitOfWork(ApplicationDbContext db)
         {
             _db = db;
             Category = new CategoryRepository(_db);
             Product = new ProductRepository(_db);
             Company = new CompanyRepository(_db);
+            ApplicationUser = new ApplicationUserRepository(_db);
+            ShoppingCart = new ShoppingCartRepository(_db);
         }
 
         public void Save()
