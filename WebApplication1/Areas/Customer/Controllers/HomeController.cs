@@ -5,6 +5,7 @@ using BookWeb.DataAccess.Repository.IRepository;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using BookWeb.Utility;
+using Microsoft.AspNetCore.Http;
 
 namespace MyBookWeb.Areas.Customer.Controllers
 {
@@ -50,22 +51,17 @@ namespace MyBookWeb.Areas.Customer.Controllers
                 //shopping cart exists
                 cartFromDb.Count += shoppingCart.Count;
                 _unitOfWork.ShoppingCart.Update(cartFromDb);
+                _unitOfWork.Save();
             }
             else
             {
                 //add cart record
-                // Create this new object or make Id = 0 => I don't know why it becomes = 1!!!
-                //_unitOfWork.ShoppingCart.Add(new ShoppingCart()
-                //{
-                //    ApplicationUserId = userId,
-                //    ProductId = shoppingCart.ProductId,
-                //    Count = shoppingCart.Count,
-
-                //});
+                // Make Id = 0 => I don't know why it becomes = 1!!!
                 shoppingCart.Id = 0; // Ensure ID is set to default value
                 _unitOfWork.ShoppingCart.Add(shoppingCart);
+                _unitOfWork.Save();
+                HttpContext.Session.SetInt32(SD.SessionCart, _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId).Count()); 
             }
-            _unitOfWork.Save();
             TempData["success"] = "Cart updated successfully";
             return RedirectToAction(nameof(Index));
         }
