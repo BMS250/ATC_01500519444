@@ -80,10 +80,10 @@
                                 <option disabled selected>--Select Company--</option>
                             </select>
                         </div>
-                        <div class="col-12">
-                            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
-                        </div>
                     }
+                    <div class="col-12">
+                        <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+                    </div>
                 </form>
             </div>
             @if (!User.IsInRole(SD.Role_Admin))
@@ -126,7 +126,7 @@
 
 
 
-    @section Scripts {
+@section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
         $(document).ready(function () {
@@ -141,4 +141,4 @@
             })
         })
     </script>
-    }
+}
