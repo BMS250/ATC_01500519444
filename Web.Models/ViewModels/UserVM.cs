@@ -11,13 +11,9 @@ namespace BookWeb.Models.ViewModels
 {
     public class UserVM
     {
-        public string Name { get; set; }
         public IEnumerable<SelectListItem> RoleList { get; set; }
         public IEnumerable<SelectListItem> CompanyList { get; set; }
 
-        public string ApplicationUserId { get; set; }
-        [ForeignKey("ApplicationUserId")]
-        [ValidateNever]
         public ApplicationUser ApplicationUser { get; set; }
     }
 }

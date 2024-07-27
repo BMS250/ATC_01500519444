@@ -75,8 +75,6 @@ namespace MyBookWeb.Areas.Admin.Controllers
             var user = _db.ApplicationUsers.FirstOrDefault(u => u.Id == userId);
             UserVM userVM = new()
             {
-                Name = user.Name,
-                ApplicationUserId = userId,
                 ApplicationUser = user,
                 CompanyList = _db.Companies.Select(u => new SelectListItem
                 {
@@ -98,34 +96,26 @@ namespace MyBookWeb.Areas.Admin.Controllers
             {
                 return Json(new { success = false, message = "Error While Role Managment" });
             }
-            var currentRole = _db.Roles.FirstOrDefault(u => u.Id == userVM.ApplicationUser.Role).Id; // .Id or .Name as he
-            //_db.UserRoles.FirstOrDefault(u => u.UserId == userVM.ApplicationUser.Id).RoleId = currentRole.Id; // 107
-            //if (userVM.ApplicationUser.Role == SD.Role_Company)
-            //{
-            //    _db.Users.FirstOrDefault(u => u.Id == userVM.ApplicationUserId).
-            //    userVM.ApplicationUser.CompanyId = _db.Companies.FirstOrDefault(u => u.Name == userVM.ApplicationUser.Company.Name).Id;
-            //}
-            //else
-            //{
-            //    _db.Users.FirstOrDefault(u => u.Id == userVM.ApplicationUserId).CompanyId
-            //    userVM.ApplicationUser.CompanyId = null;
-            //}
-            if (!(userVM.ApplicationUser.Role == currentRole))
+            var oldRole = _db.Roles.FirstOrDefault(r => r.Id == _db.UserRoles.FirstOrDefault(u => u.UserId == userVM.ApplicationUser.Id).RoleId);
+            var newRole = _db.Roles.FirstOrDefault(u => u.Id == userVM.ApplicationUser.Role);
+            ApplicationUser applicationUser = _db.ApplicationUsers.FirstOrDefault(u => u.Id == userVM.ApplicationUser.Id);
+            // Change the role
+            applicationUser.Role = newRole.Id;
+            if (newRole.Name == SD.Role_Company)
             {
-                ApplicationUser applicationUser = _db.ApplicationUsers.FirstOrDefault(u => u.Id == userVM.ApplicationUser.Id);
-                if (userVM.ApplicationUser.Role == SD.Role_Company)
-                {
-                    applicationUser.CompanyId = userVM.ApplicationUser.CompanyId;
-                }
-                if (currentRole == SD.Role_Company)
-                {
-                    applicationUser.CompanyId = null;
-                }
-                _db.SaveChanges();
-                _userManager.RemoveFromRoleAsync(applicationUser, currentRole).GetAwaiter().GetResult();
-                _userManager.AddToRoleAsync(applicationUser, currentRole).GetAwaiter().GetResult();
+                applicationUser.CompanyId = userVM.ApplicationUser.CompanyId;
             }
-            return Json(new { success = true, message = "Role Managment successful" });
+            else
+            {
+                applicationUser.CompanyId = null;
+            }
+            _db.SaveChanges();
+            _userManager.RemoveFromRoleAsync(applicationUser, oldRole.Name).GetAwaiter().GetResult();
+            _userManager.AddToRoleAsync(applicationUser, newRole.Name).GetAwaiter().GetResult();
+            //}
+            TempData["success"] = "Role Managment successful";
+            return RedirectToAction("Index");
+            //return Json(new { success = true, message = "Role Managment successful" });
         }
 
         #endregion
