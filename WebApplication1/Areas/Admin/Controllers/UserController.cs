@@ -22,7 +22,7 @@ namespace MyBookWeb.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
-            List<ApplicationUser> users = _db.ApplicationUsers.Include(u=>u.Company).ToList();
+            List<ApplicationUser> users = _db.ApplicationUsers.Include(u => u.Company).ToList();
             foreach (var user in users)
             {
                 if (user.Company == null)
@@ -37,14 +37,90 @@ namespace MyBookWeb.Areas.Admin.Controllers
         public IActionResult GetAll()
         {
             List<ApplicationUser> users = _db.ApplicationUsers.Include(u => u.Company).ToList();
+            var userRoles = _db.UserRoles.ToList();
+            var roles = _db.Roles.ToList();
+            foreach (var user in users)
+            {
+                var userId = userRoles.FirstOrDefault(u => u.UserId == user.Id).RoleId;
+                user.Role = roles.FirstOrDefault(u => u.Id == userId).Name;
+            }
             return Json(new { data = users });
         }
 
-        [HttpDelete]
-        public IActionResult Delete(int? id)
+        [HttpPost]
+        public IActionResult LockUnlock([FromBody] string id)
         {
-            return Json(new { success = true, message = "Delete successful" });
-        } 
+            var user = _db.ApplicationUsers.FirstOrDefault(u => u.Id == id);
+            if (user == null)
+            {
+                return Json(new { success = false, message = "Error While Locking/Unlocking" });
+            }
+            if (user.LockoutEnd != null && user.LockoutEnd > DateTime.Now)
+            {
+                user.LockoutEnd = DateTime.Now;
+            }
+            else
+            {
+                user.LockoutEnd = DateTime.Now.AddYears(1000);
+            }
+            _db.SaveChanges();
+            return Json(new { success = true, message = "Role Managment successful" });
+        }
+        [HttpGet]
+        public IActionResult RoleManagement(string userId)
+        {
+            var user = _db.ApplicationUsers.FirstOrDefault(u => u.Id == userId);
+            UserVM userVM = new()
+            {
+                Name = user.Name,
+                ApplicationUserId = userId,
+                ApplicationUser = user,
+                CompanyList = _db.Companies.Select(u => new SelectListItem
+                {
+                    Text = u.Name,
+                    Value = u.Id.ToString()
+                }),
+                RoleList = _db.Roles.Select(u => new SelectListItem
+                {
+                    Text = u.Name,
+                    Value = u.Id.ToString()
+                })
+            };
+            return View(userVM);
+        }
+        [HttpPost]
+        public IActionResult RoleManagement(UserVM userVM)
+        {
+            if (userVM.ApplicationUser == null)
+            {
+                return Json(new { success = false, message = "Error While Role Managment" });
+            }
+            var currentRole = _db.Roles.FirstOrDefault(u => u.Name == userVM.ApplicationUser.Role);
+            if (userVM.ApplicationUser.Role != null)
+            {
+                if (userVM.ApplicationUser.Role == SD.Role_Customer)
+                {
+                    _db.UserRoles.FirstOrDefault(u => u.UserId == userVM.ApplicationUserId).RoleId = currentRole.Id; // 103
+                }
+                _db.UserRoles.FirstOrDefault(u => u.UserId == userVM.ApplicationUserId).RoleId = currentRole.Id; // 105
+            }
+            _db.UserRoles.FirstOrDefault(u => u.UserId == userVM.ApplicationUserId).RoleId = currentRole.Id; // 107
+            //if (userVM.ApplicationUser.Role == SD.Role_Company)
+            //{
+            //    _db.Users.FirstOrDefault(u => u.Id == userVM.ApplicationUserId).
+            //    userVM.ApplicationUser.CompanyId = _db.Companies.FirstOrDefault(u => u.Name == userVM.ApplicationUser.Company.Name).Id;
+            //}
+            //else
+            //{
+            //    _db.Users.FirstOrDefault(u => u.Id == userVM.ApplicationUserId).CompanyId
+            //    userVM.ApplicationUser.CompanyId = null;
+            //}
+
+
+            _db.SaveChanges();
+            return Json(new { success = true, message = "Role Managment successful" });
+        }
+
         #endregion
     }
 }

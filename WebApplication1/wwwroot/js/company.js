@@ -13,7 +13,6 @@ function loadDataTable() {
             {
                 data: null, // No direct data source for this column
                 "render": function (data, type, row) {
-                    //bhjb
                     return `${row.streetAddress}/${row.state}/${row.city}`;
                 },
                 "width": "30%"
@@ -39,7 +38,6 @@ function Delete(url) {
         text: "You won't be able to revert this!",
         icon: 'warning',
         showCancelButton: true,
-        //jnl
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
         confirmButtonText: 'Yes, delete it!'
@@ -50,7 +48,7 @@ function Delete(url) {
                 type: 'DELETE',
                 success: function (data) {
                     dataTable.ajax.reload();
-                    //toastr.success(data.message);
+                    toastr.success(data.message);
                 }
             })
         }
