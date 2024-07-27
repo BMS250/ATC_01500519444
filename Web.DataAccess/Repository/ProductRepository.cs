@@ -33,10 +33,11 @@ namespace BookWeb.DataAccess.Repository
                 objFromDb.Price50 = product.Price50;
                 objFromDb.Price100 = product.Price100;
                 objFromDb.Author = product.Author;
-                if (product.ImageURL != null)
-                {
-                    objFromDb.ImageURL = product.ImageURL;
-                }
+                objFromDb.ProductImages = product.ProductImages;
+                //if (product.ImageURL != null)
+                //{
+                //    objFromDb.ImageURL = product.ImageURL;
+                //}
             }
         }
     }

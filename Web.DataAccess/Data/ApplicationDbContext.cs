@@ -19,6 +19,8 @@ namespace BookWeb.DataAccess.Data
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
         public DbSet<OrderHeader> OrderHeaders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
+        public DbSet<ProductImage> ProductImages { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -40,8 +42,7 @@ namespace BookWeb.DataAccess.Data
                     PriceList = 95,
                     Price50 = 90,
                     Price100 = 85,
-                    CId = 1,
-                    ImageURL = ""
+                    CId = 1
                 },
                 new Product
                 {
@@ -54,8 +55,7 @@ namespace BookWeb.DataAccess.Data
                     PriceList = 145,
                     Price50 = 140,
                     Price100 = 135,
-                    CId = 1,
-                    ImageURL = ""
+                    CId = 1
                 },
                 new Product
                 {
@@ -68,8 +68,7 @@ namespace BookWeb.DataAccess.Data
                     PriceList = 115,
                     Price50 = 110,
                     Price100 = 105,
-                    CId = 2,
-                    ImageURL = ""
+                    CId = 2
                 },
                 new Product
                 {
@@ -82,8 +81,7 @@ namespace BookWeb.DataAccess.Data
                     PriceList = 190,
                     Price50 = 180,
                     Price100 = 170,
-                    CId = 2,
-                    ImageURL = ""
+                    CId = 2
                 },
                 new Product
                 {
@@ -96,8 +94,7 @@ namespace BookWeb.DataAccess.Data
                     PriceList = 165,
                     Price50 = 155,
                     Price100 = 145,
-                    CId = 3,
-                    ImageURL = ""
+                    CId = 3
                 }
             );
             modelBuilder.Entity<Company>().HasData(
