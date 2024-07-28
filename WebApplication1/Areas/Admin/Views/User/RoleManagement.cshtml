@@ -14,22 +14,23 @@
                 <section>
                     <form method="post">
                         <input asp-for="ApplicationUser.Id" hidden />
-                        @* <h3 class="border-bottom pb-3 mb-4 text-white-50 text-center">
-                        Use a local account to log in.
-                        </h3> *@
                         <div class="form-floating mb-3">
                             <input asp-for="ApplicationUser.Name" class="form-control" />
                             <label asp-for="ApplicationUser.Name" class="form-label">Name</label>
                             <span asp-validation-for="ApplicationUser.Name"></span>
                         </div>
                         <div class="form-floating mb-3">
-                            <select asp-for="ApplicationUser.Role" asp-items="@Model.RoleList" class="form-select">
-                                @* <option selected>@Model.ApplicationUser.Role</option> *@
-                            </select>
+                            <select asp-for="ApplicationUser.Role" asp-items="@Model.RoleList" class="form-select"></select>
                         </div>
-                        <div class="form-floating mb-3">
-                            <select asp-for="ApplicationUser.CompanyId" asp-items="@Model.CompanyList" class="form-select" style="display:none">
-                                @* <option disabled selected>--Select Company--</option> *@
+                        @{
+                            var companyVisible = "display:none;";
+                        }
+                        @if (Model.ApplicationUser.Role == SD.Role_Company)
+                        {
+                            companyVisible = "display:block;";
+                        }
+                        <div class="form-floating py-2 col-12">
+                            <select asp-for="ApplicationUser.CompanyId" style="@companyVisible" asp-items="@Model.CompanyList" class="form-select">
                             </select>
                         </div>
                         <div>
